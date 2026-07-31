@@ -60,6 +60,9 @@ function goHome() {
     <footer class="py-6 text-center text-xs text-slate-400 dark:text-slate-600">
       数字工具箱 · 图片/JSON/Base64 等工具均在浏览器本地完成，不上传任何数据
     </footer>
+
+    <!-- 全局错误提示 Toast（损坏图片 / JSON 解析失败等友好提示） -->
+    <ErrorToast />
   </div>
 </template>
 

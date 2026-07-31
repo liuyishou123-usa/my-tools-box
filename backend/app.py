@@ -37,7 +37,9 @@ MAX_FILE_SIZE = 50 * 1024 * 1024        # 50MB 上限
 CONVERT_TIMEOUT = 120                   # LibreOffice 转换超时（秒）
 ALLOWED_WORD_EXT = {".doc", ".docx"}
 ALLOWED_PDF_EXT = {".pdf"}
-TEMP_ROOT = Path(tempfile.gettempdir()) / "toolbox_convert"
+# 临时目录：可通过环境变量 TOOLBOX_TEMP_DIR 覆盖（默认 /var/lib/toolbox-backend/tmp）
+# 配套定时清理脚本 backend/cleanup_uploads.py（crontab 每 10 分钟清理超 15 分钟的文件）
+TEMP_ROOT = Path(os.environ.get("TOOLBOX_TEMP_DIR", "/var/lib/toolbox-backend/tmp"))
 
 # ---------- 应用 ----------
 app = FastAPI(title="工具箱文档转换服务", version="1.0.0")

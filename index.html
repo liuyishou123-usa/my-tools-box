@@ -5,7 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>数字工具箱 - 极简在线工具集</title>
   <meta name="description" content="免费在线工具箱：图片转换压缩、JSON格式化、Base64编解码、时间戳转换等，全部浏览器本地处理，安全零上传。" />
+  <meta name="theme-color" content="#2563eb" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧰</text></svg>" />
+  <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+
+  <!-- Google Analytics 流量统计
+       ⚠️ 请将 G-XXXXXXXXXX 替换为你的真实 GA4 测量 ID：
+       1. 访问 https://analytics.google.com 创建 GA4 数据流
+       2. 在「管理 → 数据流 → Web」中复制"衡量 ID"（格式 G-XXXXXXX）
+       3. 替换下方两处 G-XXXXXXXXXX 后重新部署 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
   <div id="app"></div>

@@ -8,6 +8,7 @@
  */
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { showToast } from '../../utils/globalError'
 
 const router = useRouter()
 
@@ -72,6 +73,7 @@ function doFormat(compact = false) {
       errorMsg.value += `（第 ${line} 行，第 ${col} 列）`
     }
     output.value = ''
+    showToast('JSON 解析失败，请检查格式')
   }
 }
 

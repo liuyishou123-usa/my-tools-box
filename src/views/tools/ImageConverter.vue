@@ -8,6 +8,7 @@
  */
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { showToast } from '../../utils/globalError'
 
 const router = useRouter()
 
@@ -63,6 +64,7 @@ async function loadFile(file) {
   // 校验类型
   if (!['image/jpeg', 'image/png'].includes(file.type)) {
     error.value = '仅支持 JPG / PNG 格式，请重新选择'
+    showToast('仅支持 JPG / PNG 格式，请重新选择')
     return
   }
   originalFile.value = file
@@ -81,7 +83,10 @@ async function loadFile(file) {
     originalDim.value = `${img.naturalWidth} × ${img.naturalHeight}`
     processImage()
   }
-  img.onerror = () => { error.value = '图片解码失败，文件可能已损坏' }
+  img.onerror = () => {
+    error.value = '图片解码失败，文件可能已损坏'
+    showToast('文件解析失败，请检查图片格式')
+  }
   img.src = originalUrl.value
 }
 
@@ -128,6 +133,7 @@ async function processImage() {
     outputUrl.value = URL.createObjectURL(blob)
   } catch (e) {
     error.value = e.message || '处理失败'
+    showToast(e.message || '处理失败')
   } finally {
     processing.value = false
   }
