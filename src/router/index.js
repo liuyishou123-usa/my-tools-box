@@ -36,6 +36,12 @@ const routes = [
     meta: { title: '时间戳转换' },
   },
   {
+    path: '/tools/doc-converter',
+    name: 'doc-converter',
+    component: () => import('../views/tools/DocConverter.vue'),
+    meta: { title: '文档格式转换' },
+  },
+  {
     path: '/tools/:id',
     name: 'tool-placeholder',
     component: () => import('../views/ToolPlaceholder.vue'),
