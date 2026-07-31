@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.wrangler/
+*.timestamp-*.mjs
+.DS_Store
+*.log
