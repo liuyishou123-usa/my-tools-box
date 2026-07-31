@@ -2,14 +2,15 @@
  * Cloudflare Pages Functions：/api/* 反向代理到 VPS2 文档转换后端
  * ============================================================
  * 请求流：浏览器 → https://pdf123.cc.cd/api/doc/word2pdf
- *        → 本函数 → http://104.168.76.179:8000/api/doc/word2pdf
+ *        → 本函数 → http://api.pdf123.cc.cd:8000/api/doc/word2pdf
  *
- * 后端地址通过环境变量 TOOLBOX_API_ORIGIN 配置（Pages 项目设置里配置），
- * 未配置时使用下方默认值。
+ * 说明：目标必须用域名（api.pdf123.cc.cd → VPS2 A 记录），
+ * 不能用裸 IP——CF Worker 访问裸 IP 会被 Cloudflare 拦截（1003）。
+ * 后端地址可通过环境变量 TOOLBOX_API_ORIGIN 覆盖。
  */
 export async function onRequest(context) {
   const { request } = context
-  const origin = (context.env && context.env.TOOLBOX_API_ORIGIN) || 'http://104.168.76.179:8000'
+  const origin = (context.env && context.env.TOOLBOX_API_ORIGIN) || 'http://api.pdf123.cc.cd:8000'
 
   const url = new URL(request.url)
   const target = new URL(origin)
