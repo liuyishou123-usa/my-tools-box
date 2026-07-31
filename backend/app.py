@@ -172,7 +172,7 @@ def _ensure_libreoffice() -> None:
         )
 
 
-async def _run_soffice(src: Path, out_dir: Path, target_format: str) -> Path:
+async def _run_soffice(src: Path, out_dir: Path, target_format: str, infilter: str = None) -> Path:
     """调用 LibreOffice headless 转换，返回输出文件路径"""
     _ensure_libreoffice()
     # 独立 HOME，避免并行任务锁冲突
@@ -186,6 +186,11 @@ async def _run_soffice(src: Path, out_dir: Path, target_format: str) -> Path:
         "--outdir", str(out_dir),
         str(src),
     ]
+    # PDF→Word 必须用 writer_pdf_import 过滤器（Draw 导入 PDF 无法导出 docx）
+    # 注意：--infilter 必须用等号格式，空格格式会被 soffice 当作无效参数打印帮助
+    if infilter:
+        cmd = cmd[:4] + [f"--infilter={infilter}"] + cmd[4:]
+
     proc = await asyncio.create_subprocess_exec(
         *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE, env=env,
     )
@@ -203,21 +208,22 @@ async def _run_soffice(src: Path, out_dir: Path, target_format: str) -> Path:
 
     out_file = out_dir / f"{src.stem}.{target_format}"
     if not out_file.exists():
-        candidates = list(out_dir.glob(f"{src.stem}.*"))
+        # 兜底搜索目标格式输出；排除源文件，避免误把原文件当结果
+        candidates = [c for c in out_dir.glob(f"{src.stem}.*") if c.name != src.name]
         if not candidates:
-            raise HTTPException(status_code=500, detail="转换完成但未找到输出文件")
+            raise HTTPException(status_code=500, detail="转换完成但未找到输出文件（LibreOffice 可能不支持该转换）")
         out_file = candidates[0]
     return out_file
 
 
-async def _handle_soffice(upload: UploadFile, allowed_ext: set, target_format: str, content_type: str) -> FileResponse:
+async def _handle_soffice(upload: UploadFile, allowed_ext: set, target_format: str, content_type: str, infilter: str = None) -> FileResponse:
     """LibreOffice 引擎转换：校验 → 保存 → 转换 → 返回"""
     await _validate(upload, allowed_ext)
     work_dir = _new_task_dir()
     try:
         src = work_dir / f"input{Path(upload.filename).suffix.lower()}"
         _save_upload(upload, src)
-        out_file = await _run_soffice(src, work_dir, target_format)
+        out_file = await _run_soffice(src, work_dir, target_format, infilter)
         return _response(out_file, content_type, upload.filename, target_format)
     finally:
         _schedule_cleanup(work_dir)
@@ -315,9 +321,10 @@ async def word2pdf(file: UploadFile = File(...)):
 
 @app.post("/api/doc/pdf2word")
 async def pdf2word(file: UploadFile = File(...)):
-    """PDF → Word（文本型 PDF 最佳，扫描件效果有限）"""
+    """PDF → Word（writer_pdf_import 过滤器，文本型 PDF 最佳，扫描件效果有限）"""
     return await _handle_soffice(file, ALLOWED_PDF_EXT, "docx",
-                                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                 infilter="writer_pdf_import")
 
 
 @app.post("/api/doc/xlsx2pdf")
