@@ -289,8 +289,9 @@ def _schedule_cleanup(work_dir: Path) -> None:
 #  路由
 # ============================================================
 @app.get("/health")
+@app.get("/api/health")
 async def health():
-    """健康检查（供监控/前端探测）"""
+    """健康检查（供监控/前端探测；/api/health 为 Pages Functions 代理同域路径）"""
     soffice = shutil.which("soffice") or shutil.which("libreoffice")
     py_libs = {}
     for name, mod in [("python-docx", "docx"), ("openpyxl", "openpyxl"), ("pdfplumber", "pdfplumber")]:

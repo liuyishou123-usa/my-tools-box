@@ -136,7 +136,7 @@ async function convert(conv) {
 // ---------- 后端健康检查 ----------
 onMounted(async () => {
   try {
-    const res = await fetch(`${API_BASE}/health`, { timeout: 8000 })
+    const res = await fetch(`${API_BASE}/api/health`, { timeout: 8000 })
     serverOk.value = res.ok
   } catch (_) {
     serverOk.value = false
